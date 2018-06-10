@@ -1,5 +1,6 @@
 <?php
 
+use App\Order;
 use App\Concert;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
@@ -51,4 +52,5 @@ class ViewConcertListingTest extends TestCase
 
         $this->assertResponseStatus(404);
     }
+    
 }
