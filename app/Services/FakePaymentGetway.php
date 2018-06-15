@@ -4,9 +4,6 @@ namespace App\Services;
 
 use App\Exceptions\PaymentFailedException;
 
-/**
- * 
- */
 class FakePaymentGetway implements IPaymentGetway
 {
 	protected $charges;

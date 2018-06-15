@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Order;
 use App\Concert;
+use App\Reservation;
 use Illuminate\Http\Request;
 use App\Services\IPaymentGetway;
 use App\Exceptions\PaymentFailedException;
@@ -26,12 +28,17 @@ class ConcertOrdersController extends Controller
 			'payment_token' => 'required',
 		]);
 		try {
-			$order = $concert->orderTickets(request('email'), request('ticket_quantity'));
-			$this->paymentGetway->charge(request('ticket_quantity') * $concert->ticket_price, request('payment_token'));
+			$tickets = $concert->findTickets(request('ticket_quantity'));
+
+			$reservation = new Reservation($tickets);
+
+			$this->paymentGetway->charge($reservation->totalCost(), request('payment_token'));
+
+			Order::place($tickets, request('email'), $reservation->totalCost());
+
 			return response()->json([], 201);
 
 		} catch (PaymentFailedException $e) {
-			$order->cancel();
 			return response()->json([], 422);
 		}
 		catch(NotEnoughTicketsException $e) {
