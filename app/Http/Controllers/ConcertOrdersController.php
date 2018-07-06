@@ -27,6 +27,7 @@ class ConcertOrdersController extends Controller
 			'ticket_quantity' => 'required|integer|min:1',
 			'payment_token' => 'required',
 		]);
+
 		try {
 			$tickets = $concert->findTickets(request('ticket_quantity'));
 
@@ -36,7 +37,11 @@ class ConcertOrdersController extends Controller
 
 			Order::place($tickets, request('email'), $reservation->totalCost());
 
-			return response()->json([], 201);
+			return response()->json([
+				'email' => request('email'),
+				'ticket_quantity' => request('ticket_quantity'),
+				'amount' => $reservation->totalCost()
+			], 201);
 
 		} catch (PaymentFailedException $e) {
 			return response()->json([], 422);

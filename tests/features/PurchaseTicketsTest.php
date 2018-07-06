@@ -50,6 +50,11 @@ class PurchaseTicketsTest extends TestCase
         ]);
 
         $this->assertResponseStatus(201);
+        $this->seeJsonSubset([
+            'email' => 'john@example.com',
+            'ticket_quantity' => 3,
+            'amount' => 3250 * 3
+        ]);
         $this->assertEquals(9750, $this->paymentGetway->totalCharges());
 
         $order = $concert->orders()->where('email', 'john@example.com')->first();
